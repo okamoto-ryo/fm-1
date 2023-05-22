@@ -6,4 +6,4 @@ DIY FM synthesizer
 - ディスプレイのグラフィックを改善
 - エンベロープのasymp化
 - パラメーター追加
--- LFOの種類
+  - LFOの種類
