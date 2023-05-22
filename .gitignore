@@ -1,0 +1,7 @@
+Objects/
+Listings/
+*.map
+DebugConfig/
+*.uvoptx
+*.uvguix.*
+*.scvd
