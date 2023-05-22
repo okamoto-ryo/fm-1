@@ -25,10 +25,6 @@ static float indexEnvDepth = 0.0f;
 
 int8_t routeConfig = 0;
 
-#ifdef MOOG_FILTER
-float f = 0, q = 0, p = 0;
-#endif
-
 extern const int32_t sinTbl[513];
 extern const float equalTemp[];
 
@@ -481,61 +477,9 @@ void TIM4_IRQHandler(void) {
 		
 	}
 	
-	#ifdef SIMPLE_FILTER
-	
-	int32_t out1 = (int32_t)(filtCoeff * (float)filtAcm1);
-	filtAcm1 += -out1 + ampOut - (int)((float)out4 * reso);
-	
-	out2 = (int32_t)(filtCoeff * (float)filtAcm2);
-	filtAcm2 += -out2 + out1;
-	
-	out3 = (int32_t)(filtCoeff * (float)filtAcm3);
-	filtAcm3 += -out3 + out2;
-	
-	out4 = (int32_t)(filtCoeff * (float)filtAcm4);
-	filtAcm4 += -out4 + out3;
-	
-	DAC1->DHR12R1 = (uint32_t)(out4 + (2048 << 3)) >> 3;
-	
-	#else
-	
 	ampLev += ((GetLFO(0)->lev) * ampLFODpt) >> 12;
-	
 	DAC1->DHR12R1 = (uint32_t)((ampOut * ampLev >> 12) + (2048 << 3)) >> 3;
-	
-	#endif
-	#ifdef MOOG_FILTER
-	
-//=============================
-//	Paul Kellet's Moog filter
-//=============================
-	
-	static float in = 0;
-	static float b0, b1, b2, b3, b4, t1, t2;
-	in = (float)ampOut / 1024;
-
-// Filter (in [-1.0...+1.0])
-
-  in -= q * b4;                          //feedback
-  t1 = b1;  b1 = (in + b0) * p - b1 * f;
-  t2 = b2;  b2 = (b1 + t1) * p - b2 * f;
-  t1 = b3;  b3 = (b2 + t2) * p - b3 * f;
-            b4 = (b3 + t1) * p - b4 * f;
-  b4 = b4 - b4 * b4 * b4 * 0.166667f;    //clipping
-  b0 = in;
-
-// Lowpass  output:  b4
-// Highpass output:  in - b4;
-// Bandpass output:  3.0f * (b3 - b4);
-
-	DAC1->DHR12R1 = (uint32_t)((b4 + 1.0f) * 512);
-
-
-#endif
-	
-	
 	GPIOA->BSRR |= GPIO_BSRR_BR8;
-	
 	TIM4->SR &= ~TIM_SR_UIF;
 }
 
@@ -607,12 +551,6 @@ void TIM1_UP_TIM10_IRQHandler(void) {
 	}
 	
 	ProcLFO();
-	
-//	static int i = 0;
-//	if (i++ > 50) {
-//		AnimationTick();
-//		i = 0;
-//	}
 	
 	TIM10->SR &= ~TIM_SR_UIF_Msk;
 }
