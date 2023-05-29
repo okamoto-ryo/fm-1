@@ -2,7 +2,7 @@
 DIY FM synthesizer
 
 ## Overview
-[FM-1](https://okamoto-ryo.github.io/fm-1.html "FM-1")
+<a href="https://okamoto-ryo.github.io/fm-1.html" target="_blank">FM-1</a>
 
 ## Requirements
 - ARM KEIL uVision 5.0
